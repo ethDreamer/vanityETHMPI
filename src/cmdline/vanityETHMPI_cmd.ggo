@@ -1,0 +1,16 @@
+package "vanityETHMPI"
+version "1.0"
+purpose "Calculates ETH Vanity Addresses in Parallel"
+
+# Options
+option  "input"     i   "Input HEX string"                                  string
+option  "count"     c   "Number of wallets to generate"                     int         default="1"             optional
+option  "contract"  -   "Require first contract address to match input"     flag        off
+
+#option  "log"       l   "Filename to log output"                            string                              optional
+#option  "keypath"       k   "key path in a/b/c format using n' for hardened nodes"  string  default="44'/60'/0'"    optional
+#option  "confirm"       c   "Confirm addresses on Ledger"                           flag    off
+#option  "start"         s   "Starting address index to display"                     int     default="0"             optional
+#option  "addresses"     a   "Number of derived addresses to display"                int     default="5"             optional
+
+
