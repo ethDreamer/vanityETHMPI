@@ -101,15 +101,16 @@ CONFIG_CLEAN_VPATH_FILES =
 @USE_MPI_TRUE@am__EXEEXT_1 = vanityETHMPI$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
+am__dirstamp = $(am__leading_dot)dirstamp
 am_vanityETH_OBJECTS = keccak.$(OBJEXT) vanityETHMPI.$(OBJEXT) \
-	vanityETHCmdline.$(OBJEXT)
+	cmdline/vanityETHCmdline.$(OBJEXT)
 vanityETH_OBJECTS = $(am_vanityETH_OBJECTS)
 vanityETH_LDADD = $(LDADD)
 vanityETH_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(vanityETH_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_vanityETHMPI_OBJECTS = vanityETHMPI-keccak.$(OBJEXT) \
 	vanityETHMPI-vanityETHMPI.$(OBJEXT) \
-	vanityETHMPI-vanityETHCmdline.$(OBJEXT)
+	cmdline/vanityETHMPI-vanityETHCmdline.$(OBJEXT)
 vanityETHMPI_OBJECTS = $(am_vanityETHMPI_OBJECTS)
 vanityETHMPI_LDADD = $(LDADD)
 vanityETHMPI_LINK = $(CCLD) $(vanityETHMPI_CFLAGS) $(CFLAGS) \
@@ -130,11 +131,11 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/keccak.Po \
-	./$(DEPDIR)/vanityETHCmdline.Po \
 	./$(DEPDIR)/vanityETHMPI-keccak.Po \
-	./$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po \
 	./$(DEPDIR)/vanityETHMPI-vanityETHMPI.Po \
-	./$(DEPDIR)/vanityETHMPI.Po
+	./$(DEPDIR)/vanityETHMPI.Po \
+	cmdline/$(DEPDIR)/vanityETHCmdline.Po \
+	cmdline/$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -350,10 +351,20 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+cmdline/$(am__dirstamp):
+	@$(MKDIR_P) cmdline
+	@: > cmdline/$(am__dirstamp)
+cmdline/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) cmdline/$(DEPDIR)
+	@: > cmdline/$(DEPDIR)/$(am__dirstamp)
+cmdline/vanityETHCmdline.$(OBJEXT): cmdline/$(am__dirstamp) \
+	cmdline/$(DEPDIR)/$(am__dirstamp)
 
 vanityETH$(EXEEXT): $(vanityETH_OBJECTS) $(vanityETH_DEPENDENCIES) $(EXTRA_vanityETH_DEPENDENCIES) 
 	@rm -f vanityETH$(EXEEXT)
 	$(AM_V_CCLD)$(vanityETH_LINK) $(vanityETH_OBJECTS) $(vanityETH_LDADD) $(LIBS)
+cmdline/vanityETHMPI-vanityETHCmdline.$(OBJEXT):  \
+	cmdline/$(am__dirstamp) cmdline/$(DEPDIR)/$(am__dirstamp)
 
 vanityETHMPI$(EXEEXT): $(vanityETHMPI_OBJECTS) $(vanityETHMPI_DEPENDENCIES) $(EXTRA_vanityETHMPI_DEPENDENCIES) 
 	@rm -f vanityETHMPI$(EXEEXT)
@@ -361,16 +372,17 @@ vanityETHMPI$(EXEEXT): $(vanityETHMPI_OBJECTS) $(vanityETHMPI_DEPENDENCIES) $(EX
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f cmdline/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keccak.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vanityETHCmdline.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vanityETHMPI-keccak.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vanityETHMPI-vanityETHMPI.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vanityETHMPI.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@cmdline/$(DEPDIR)/vanityETHCmdline.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@cmdline/$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -379,32 +391,20 @@ $(am__depfiles_remade):
 am--depfiles: $(am__depfiles_remade)
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-vanityETHCmdline.o: cmdline/vanityETHCmdline.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT vanityETHCmdline.o -MD -MP -MF $(DEPDIR)/vanityETHCmdline.Tpo -c -o vanityETHCmdline.o `test -f 'cmdline/vanityETHCmdline.c' || echo '$(srcdir)/'`cmdline/vanityETHCmdline.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/vanityETHCmdline.Tpo $(DEPDIR)/vanityETHCmdline.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmdline/vanityETHCmdline.c' object='vanityETHCmdline.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o vanityETHCmdline.o `test -f 'cmdline/vanityETHCmdline.c' || echo '$(srcdir)/'`cmdline/vanityETHCmdline.c
-
-vanityETHCmdline.obj: cmdline/vanityETHCmdline.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT vanityETHCmdline.obj -MD -MP -MF $(DEPDIR)/vanityETHCmdline.Tpo -c -o vanityETHCmdline.obj `if test -f 'cmdline/vanityETHCmdline.c'; then $(CYGPATH_W) 'cmdline/vanityETHCmdline.c'; else $(CYGPATH_W) '$(srcdir)/cmdline/vanityETHCmdline.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/vanityETHCmdline.Tpo $(DEPDIR)/vanityETHCmdline.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmdline/vanityETHCmdline.c' object='vanityETHCmdline.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o vanityETHCmdline.obj `if test -f 'cmdline/vanityETHCmdline.c'; then $(CYGPATH_W) 'cmdline/vanityETHCmdline.c'; else $(CYGPATH_W) '$(srcdir)/cmdline/vanityETHCmdline.c'; fi`
 
 vanityETHMPI-keccak.o: keccak.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vanityETHMPI_CFLAGS) $(CFLAGS) -MT vanityETHMPI-keccak.o -MD -MP -MF $(DEPDIR)/vanityETHMPI-keccak.Tpo -c -o vanityETHMPI-keccak.o `test -f 'keccak.c' || echo '$(srcdir)/'`keccak.c
@@ -434,19 +434,19 @@ vanityETHMPI-vanityETHMPI.obj: vanityETHMPI.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vanityETHMPI_CFLAGS) $(CFLAGS) -c -o vanityETHMPI-vanityETHMPI.obj `if test -f 'vanityETHMPI.c'; then $(CYGPATH_W) 'vanityETHMPI.c'; else $(CYGPATH_W) '$(srcdir)/vanityETHMPI.c'; fi`
 
-vanityETHMPI-vanityETHCmdline.o: cmdline/vanityETHCmdline.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vanityETHMPI_CFLAGS) $(CFLAGS) -MT vanityETHMPI-vanityETHCmdline.o -MD -MP -MF $(DEPDIR)/vanityETHMPI-vanityETHCmdline.Tpo -c -o vanityETHMPI-vanityETHCmdline.o `test -f 'cmdline/vanityETHCmdline.c' || echo '$(srcdir)/'`cmdline/vanityETHCmdline.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/vanityETHMPI-vanityETHCmdline.Tpo $(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmdline/vanityETHCmdline.c' object='vanityETHMPI-vanityETHCmdline.o' libtool=no @AMDEPBACKSLASH@
+cmdline/vanityETHMPI-vanityETHCmdline.o: cmdline/vanityETHCmdline.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vanityETHMPI_CFLAGS) $(CFLAGS) -MT cmdline/vanityETHMPI-vanityETHCmdline.o -MD -MP -MF cmdline/$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Tpo -c -o cmdline/vanityETHMPI-vanityETHCmdline.o `test -f 'cmdline/vanityETHCmdline.c' || echo '$(srcdir)/'`cmdline/vanityETHCmdline.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) cmdline/$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Tpo cmdline/$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmdline/vanityETHCmdline.c' object='cmdline/vanityETHMPI-vanityETHCmdline.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vanityETHMPI_CFLAGS) $(CFLAGS) -c -o vanityETHMPI-vanityETHCmdline.o `test -f 'cmdline/vanityETHCmdline.c' || echo '$(srcdir)/'`cmdline/vanityETHCmdline.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vanityETHMPI_CFLAGS) $(CFLAGS) -c -o cmdline/vanityETHMPI-vanityETHCmdline.o `test -f 'cmdline/vanityETHCmdline.c' || echo '$(srcdir)/'`cmdline/vanityETHCmdline.c
 
-vanityETHMPI-vanityETHCmdline.obj: cmdline/vanityETHCmdline.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vanityETHMPI_CFLAGS) $(CFLAGS) -MT vanityETHMPI-vanityETHCmdline.obj -MD -MP -MF $(DEPDIR)/vanityETHMPI-vanityETHCmdline.Tpo -c -o vanityETHMPI-vanityETHCmdline.obj `if test -f 'cmdline/vanityETHCmdline.c'; then $(CYGPATH_W) 'cmdline/vanityETHCmdline.c'; else $(CYGPATH_W) '$(srcdir)/cmdline/vanityETHCmdline.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/vanityETHMPI-vanityETHCmdline.Tpo $(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmdline/vanityETHCmdline.c' object='vanityETHMPI-vanityETHCmdline.obj' libtool=no @AMDEPBACKSLASH@
+cmdline/vanityETHMPI-vanityETHCmdline.obj: cmdline/vanityETHCmdline.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vanityETHMPI_CFLAGS) $(CFLAGS) -MT cmdline/vanityETHMPI-vanityETHCmdline.obj -MD -MP -MF cmdline/$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Tpo -c -o cmdline/vanityETHMPI-vanityETHCmdline.obj `if test -f 'cmdline/vanityETHCmdline.c'; then $(CYGPATH_W) 'cmdline/vanityETHCmdline.c'; else $(CYGPATH_W) '$(srcdir)/cmdline/vanityETHCmdline.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) cmdline/$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Tpo cmdline/$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmdline/vanityETHCmdline.c' object='cmdline/vanityETHMPI-vanityETHCmdline.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vanityETHMPI_CFLAGS) $(CFLAGS) -c -o vanityETHMPI-vanityETHCmdline.obj `if test -f 'cmdline/vanityETHCmdline.c'; then $(CYGPATH_W) 'cmdline/vanityETHCmdline.c'; else $(CYGPATH_W) '$(srcdir)/cmdline/vanityETHCmdline.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(vanityETHMPI_CFLAGS) $(CFLAGS) -c -o cmdline/vanityETHMPI-vanityETHCmdline.obj `if test -f 'cmdline/vanityETHCmdline.c'; then $(CYGPATH_W) 'cmdline/vanityETHCmdline.c'; else $(CYGPATH_W) '$(srcdir)/cmdline/vanityETHCmdline.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -566,6 +566,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f cmdline/$(DEPDIR)/$(am__dirstamp)
+	-rm -f cmdline/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -576,11 +578,11 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/keccak.Po
-	-rm -f ./$(DEPDIR)/vanityETHCmdline.Po
 	-rm -f ./$(DEPDIR)/vanityETHMPI-keccak.Po
-	-rm -f ./$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po
 	-rm -f ./$(DEPDIR)/vanityETHMPI-vanityETHMPI.Po
 	-rm -f ./$(DEPDIR)/vanityETHMPI.Po
+	-rm -f cmdline/$(DEPDIR)/vanityETHCmdline.Po
+	-rm -f cmdline/$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -627,11 +629,11 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/keccak.Po
-	-rm -f ./$(DEPDIR)/vanityETHCmdline.Po
 	-rm -f ./$(DEPDIR)/vanityETHMPI-keccak.Po
-	-rm -f ./$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po
 	-rm -f ./$(DEPDIR)/vanityETHMPI-vanityETHMPI.Po
 	-rm -f ./$(DEPDIR)/vanityETHMPI.Po
+	-rm -f cmdline/$(DEPDIR)/vanityETHCmdline.Po
+	-rm -f cmdline/$(DEPDIR)/vanityETHMPI-vanityETHCmdline.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

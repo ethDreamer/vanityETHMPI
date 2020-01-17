@@ -2,8 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([vanityETHMPI], [1.0], [ethdreamer1@gmail.com])
+AC_INIT([vanityETHMPI], [1.0], [ethereumdreamer@gmail.com])
 AM_INIT_AUTOMAKE(vanityETHMPI, 1.0)
+AM_INIT_AUTOMAKE([subdir-objects])
 AC_OUTPUT(Makefile src/Makefile)
 AC_CONFIG_SRCDIR([src/vanityETHMPI.c])
 AC_CONFIG_HEADERS([config.h])
