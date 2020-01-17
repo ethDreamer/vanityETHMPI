@@ -1,7 +1,11 @@
-vanityETHMPI
+# vanityETHMPI
 
-HOW TO COMPILE
-./configure
-make
+### HOW TO COMPILE
 
-This will create two binaries. vanityETH is a serial code that can easily be run in an embarassingly parallel way if your system doesn't have MPI installed. vanityETHMPI uses MPI to parallelize the computation.
+./configure && make
+
+This will create two binaries:
+- **vanityETH**
+- **vanityETHMPI** (if your system has MPI installed)
+
+**vanityETH** is a serial code that can easily be run in an embarassingly parallel way if your system doesn't have MPI installed. **vanityETHMPI** uses MPI to parallelize the computation.
